@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Archive {
+  id          String    @id @default(cuid())
+  name        String
+  url         String    @unique
+  description String?
+  lastFetched DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  messages    Message[]
+
+  @@index([url])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  archiveId String
+  subject   String
+  author    String
+  content   String
+  date      DateTime
+  messageId String   @unique
+  threadId  String?
+  createdAt DateTime @default(now())
+  archive   Archive  @relation(fields: [archiveId], references: [id], onDelete: Cascade)
+  wisdom    Wisdom[] @relation("MessageToWisdom")
+
+  @@index([archiveId])
+  @@index([messageId])
+  @@index([date])
+}
+
+model Wisdom {
+  id         String    @id @default(cuid())
+  content    String
+  prompt     String?
+  messageIds String
+  votes      Int       @default(0)
+  featured   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  messages   Message[] @relation("MessageToWisdom")
+
+  @@index([votes])
+  @@index([featured])
+  @@index([createdAt])
+}
+
+model WisdomVote {
+  id        String   @id @default(cuid())
+  wisdomId  String
+  sessionId String
+  vote      Int
+  createdAt DateTime @default(now())
+
+  @@unique([wisdomId, sessionId])
+  @@index([wisdomId])
+  @@index([sessionId])
+}
+
+model MessageVector {
+  id        String   @id @default(cuid())
+  messageId String   @unique
+  embedding String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([messageId])
+}
+
+model WisdomVector {
+  id        String   @id @default(cuid())
+  wisdomId  String   @unique
+  embedding String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([wisdomId])
+}

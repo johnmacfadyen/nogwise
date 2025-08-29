@@ -1,7 +1,14 @@
 {
   "name": "nogwise",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
+  "author": "John MacFadyen",
+  "description": "AI-powered mailing list archive analyzer and wisdom generator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnmacfadyen/nogwise.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
